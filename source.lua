@@ -1,4 +1,10 @@
+-- // Comet Library
+-- // Made by re_sistance
+-- // You can copy and make your own remix lol.
 -- Services
+if debugX then
+	warn('loading lol')
+end
 local function getService(name)
     local service = game:GetService(name)
     return if cloneref then cloneref(service) else service
@@ -19,48 +25,121 @@ local CometLib = {
     ThemeObjects = {},
     Connections = {},
     Flags = {},
-    Themes = {
-        Default = {
-            Main = Color3.fromRGB(25, 25, 25),
-            Secondary = Color3.fromRGB(32, 32, 32),
-            MainColor = Color3.fromRGB(16, 16, 16),
-            SecondaryColor = Color3.fromRGB(22, 22, 22),
-            Text = Color3.fromRGB(240, 240, 240),
-            TextDark = Color3.fromRGB(150, 150, 150),
-            TextColor = Color3.fromRGB(240, 240, 240),
-            Stroke = Color3.fromRGB(60, 60, 60),
-            Divider = Color3.fromRGB(60, 60, 60),
-            TabBackground = Color3.fromRGB(80, 80, 80),
-            TabStroke = Color3.fromRGB(85, 85, 85),
-            TabBackgroundSelected = Color3.fromRGB(210, 210, 210),
-            TabTextColor = Color3.fromRGB(240, 240, 240),
-            SelectedTabTextColor = Color3.fromRGB(50, 50, 50),
-            SliderColor = Color3.fromRGB(255, 255, 255),
-            ToggleEnabled = Color3.fromRGB(255, 255, 255),
-            ToggleDisabled = Color3.fromRGB(139, 139, 139),
-            CardButton = Color3.fromRGB(230, 230, 230),
-            NotificationActionsBackground = Color3.fromRGB(230, 230, 230),
-            ImageColor = Color3.fromRGB(255, 255, 255),
-            TweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quint)
-        }
-    },
+    Themes = {},
     SelectedTheme = "Default",
     Folder = nil,
     SaveCfg = false
 }
 
--- Feather Icons
-local Icons = {}
-local Success, Response = pcall(function()
-    Icons = HttpService:JSONDecode(game:HttpGet("https://raw.githubusercontent.com/evoincorp/lucideblox/master/src/modules/util/icons.json")).icons
-end)
+-- Default Themes
+CometLib.Themes = {
+    Default = {
+        Main = Color3.fromRGB(25, 25, 25),
+        Secondary = Color3.fromRGB(32, 32, 32),
+        MainColor = Color3.fromRGB(16, 16, 16),
+        SecondaryColor = Color3.fromRGB(22, 22, 22),
+        Text = Color3.fromRGB(240, 240, 240),
+        TextDark = Color3.fromRGB(150, 150, 150),
+        TextColor = Color3.fromRGB(240, 240, 240),
+        Stroke = Color3.fromRGB(60, 60, 60),
+        Divider = Color3.fromRGB(60, 60, 60),
+        TabBackground = Color3.fromRGB(80, 80, 80),
+        TabStroke = Color3.fromRGB(85, 85, 85),
+        TabBackgroundSelected = Color3.fromRGB(210, 210, 210),
+        TabTextColor = Color3.fromRGB(240, 240, 240),
+        SelectedTabTextColor = Color3.fromRGB(50, 50, 50),
+        SliderColor = Color3.fromRGB(255, 255, 255),
+        ToggleEnabled = Color3.fromRGB(255, 255, 255),
+        ToggleDisabled = Color3.fromRGB(139, 139, 139),
+        CardButton = Color3.fromRGB(230, 230, 230),
+        NotificationActionsBackground = Color3.fromRGB(230, 230, 230),
+        ImageColor = Color3.fromRGB(255, 255, 255),
+        TweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quint)
+    },
+    RobloxDark = {
+        Main = Color3.fromRGB(25, 25, 25),
+        Secondary = Color3.fromRGB(32, 32, 32),
+        MainColor = Color3.fromRGB(16, 16, 16),
+        SecondaryColor = Color3.fromRGB(22, 22, 22),
+        Text = Color3.fromRGB(240, 240, 240),
+        TextDark = Color3.fromRGB(150, 150, 150),
+        TextColor = Color3.fromRGB(240, 240, 240),
+        Stroke = Color3.fromRGB(60, 60, 60),
+        Divider = Color3.fromRGB(60, 60, 60),
+        TabBackground = Color3.fromRGB(80, 80, 80),
+        TabStroke = Color3.fromRGB(85, 85, 85),
+        TabBackgroundSelected = Color3.fromRGB(210, 210, 210),
+        TabTextColor = Color3.fromRGB(240, 240, 240),
+        SelectedTabTextColor = Color3.fromRGB(50, 50, 50),
+        SliderColor = Color3.fromRGB(255, 255, 255),
+        ToggleEnabled = Color3.fromRGB(255, 255, 255),
+        ToggleDisabled = Color3.fromRGB(139, 139, 139),
+        CardButton = Color3.fromRGB(230, 230, 230),
+        NotificationActionsBackground = Color3.fromRGB(230, 230, 230),
+        ImageColor = Color3.fromRGB(255, 255, 255),
+        TweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quint)
+    }
+}
 
-if not Success then
-    warn("Failed to load Feather Icons: " .. tostring(Response))
+function CometLib:CustomizeTheme(overrides)
+    local theme = table.clone(self.Themes[self.SelectedTheme])
+    for k, v in pairs(overrides) do
+        theme[k] = v
+    end
+    self.Themes["Custom"] = theme
+    self.SelectedTheme = "Custom"
 end
 
+function CometLib:GetTheme()
+    return self.Themes[self.SelectedTheme]
+end
+
+function CometLib:SetTheme(themeName)
+    if self.Themes[themeName] then
+        self.SelectedTheme = themeName
+    else
+        warn("Theme does not exist: " .. tostring(themeName))
+    end
+end
+
+function CometLib:SaveThemePreference()
+    if writefile then
+        local data = HttpService:JSONEncode({ Theme = self.SelectedTheme })
+        writefile("CometThemePreference.json", data)
+    end
+end
+
+function CometLib:LoadThemePreference()
+    if isfile and isfile("CometThemePreference.json") then
+        local data = HttpService:JSONDecode(readfile("CometThemePreference.json"))
+        if data and data.Theme and self.Themes[data.Theme] then
+            self:SetTheme(data.Theme)
+        end
+    end
+end
+
+----==[[ Feather Icons ]]==----
+local Icons = {}
+local Success, Response = pcall(function()
+    local Icons = useStudio and require(script.Parent.icons) or loadWithTimeout('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/refs/heads/main/icons.lua')
+end)
+if not Success then warn("Failed to load Feather Icons: " .. tostring(Response)) end
+
 local function GetIcon(IconName)
-    return Icons[IconName] or nil
+    return Icons[IconName] or IconName
+end
+
+-- Converts ID to asset URI. Returns rbxassetid://0 if ID is not a number
+local function GetAssetUri(id)
+    local assetUri = "rbxassetid://0"
+    if type(id) == "number" then
+        assetUri = "rbxassetid://" .. id
+    elseif type(id) == "string" and not Icons then
+        warn("Comet | Cannot use Lucide icons as icons library is not loaded")
+    else
+        warn("Comet | The icon argument must either be an icon ID (number) or a Lucide icon name (string)")
+    end
+    return assetUri
 end
 
 -- Element Constructor
@@ -68,12 +147,11 @@ local function CreateElement(name, func)
     CometLib.Elements[name] = func
 end
 
--- Create Image Element
 CreateElement("Image", function(ImageID, props)
     local ImageNew = Instance.new("ImageLabel")
     ImageNew.BackgroundTransparency = 1
-    ImageNew.Image = GetIcon(ImageID) or ImageID
-    if props and typeof(props) == "table" then
+    ImageNew.Image = GetIcon(ImageID)
+    if typeof(props) == "table" then
         for k, v in pairs(props) do
             ImageNew[k] = v
         end
