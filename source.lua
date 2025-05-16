@@ -258,6 +258,80 @@ function CometLib:MakeWindow(options)
         Tabs[#Tabs + 1] = { Page = Page }
 
         local tabAPI = {}
+function tabAPI:AddSlider(config)
+    local theme = self:GetTheme()
+
+    local SliderFrame = Instance.new("Frame")
+    SliderFrame.Size = UDim2.new(0, 200, 0, 36)
+    SliderFrame.BackgroundTransparency = 1
+
+    local Label = Instance.new("TextLabel")
+    Label.Parent = SliderFrame
+    Label.Size = UDim2.new(1, 0, 0.5, 0)
+    Label.Text = config.Name or "Slider"
+    Label.TextColor3 = theme.Text
+    Label.BackgroundTransparency = 1
+    Label.Font = Enum.Font.Gotham
+    Label.TextSize = 14
+    Label.TextXAlignment = Enum.TextXAlignment.Left
+
+    local Bar = Instance.new("Frame")
+    Bar.Parent = SliderFrame
+    Bar.Position = UDim2.new(0, 0, 0.5, 6)
+    Bar.Size = UDim2.new(1, 0, 0, 6)
+    Bar.BackgroundColor3 = theme.Stroke
+    Bar.BorderSizePixel = 0
+
+    local Fill = Instance.new("Frame")
+    Fill.Parent = Bar
+    Fill.Size = UDim2.new(0, 0, 1, 0)
+    Fill.BackgroundColor3 = theme.SliderColor
+    Fill.BorderSizePixel = 0
+
+    local corner1 = Instance.new("UICorner", Bar)
+    corner1.CornerRadius = UDim.new(1, 0)
+    local corner2 = Instance.new("UICorner", Fill)
+    corner2.CornerRadius = UDim.new(1, 0)
+
+    local dragging = false
+    local value = config.Value or config.Min or 0
+    local min = config.Min or 0
+    local max = config.Max or 100
+
+    local function SetSlider(newValue)
+        value = math.clamp(newValue, min, max)
+        local percent = (value - min) / (max - min)
+        Fill.Size = UDim2.new(percent, 0, 1, 0)
+
+        if typeof(config.Callback) == "function" then
+            config.Callback(value)
+        end
+    end
+
+    Bar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+    RunService.RenderStepped:Connect(function()
+        if dragging then
+            local mouseX = UserInputService:GetMouseLocation().X
+            local barX = Bar.AbsolutePosition.X
+            local barWidth = Bar.AbsoluteSize.X
+            local pos = math.clamp(mouseX - barX, 0, barWidth)
+            local percent = pos / barWidth
+            SetSlider(min + percent * (max - min))
+        end
+    end)
+
+    SetSlider(value)
+    return SliderFrame
+end
 
         function tabAPI:AddButton(data)
             local Btn = Instance.new("TextButton", Page)
