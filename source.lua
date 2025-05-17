@@ -1,3 +1,5 @@
+local TweenService = game:GetService("TweenService")
+
 local lib = {};
 local sections = {};
 local ContentAreas = {};
@@ -5,39 +7,97 @@ local Notifications = {};
 local visible = true;
 local IsToggleLocked = false;
 local Theme = {
-  TextColor = Color3.fromRGB(240, 240, 240),
-  BackgroundColor = Color3.fromRGB(30, 30, 30),
-  MainAccent = Color3.fromRGB(0, 122, 255),
-  SecondaryAccent = Color3.fromRGB(50, 50, 50),
-  ShadowColor = Color3.fromRGB(0, 0, 0),
-  NotificationText = Color3.fromRGB(255, 255, 255)
-};
+  BackgroundMain = Color3.fromRGB(18, 20, 23),          -- Main bg color
+  BackgroundSecondary = Color3.fromRGB(30, 34, 40),     -- Panels, cards, etc.
+  BackgroundCard = Color3.fromRGB(42, 47, 54),          -- Cards inside panels
+  TextPrimary = Color3.fromRGB(230, 230, 230),          -- Main text
+  TextSecondary = Color3.fromRGB(163, 168, 176),        -- Secondary text, placeholders
+  MainAccent = Color3.fromRGB(0, 153, 255),             -- Accent color (blue)
+  AccentHover = Color3.fromRGB(51, 170, 255),           -- Hover state accent
+  BorderColor = Color3.fromRGB(56, 61, 71),             -- Borders & dividers
+  ShadowColor = Color3.fromRGB(0, 0, 0),                 -- Shadows
+  NotificationBackground = Color3.fromRGB(0, 120, 215), -- Notifications bg
+  NotificationText = Color3.fromRGB(255, 255, 255),     -- Notifications text
+  TextStroke = Color3.fromRGB(0, 0, 0),                  -- Text stroke for contrast
+}
 local function tp(ins, pos, time, thing)
 	((game:GetService("TweenService")):Create(ins, TweenInfo.new(time, Enum.EasingStyle.Quart, Enum.EasingDirection.InOut), {
 		Position = pos
 	})):Play();
 end;
+local function tp(ins, pos, time)
+  TweenService:Create(ins, TweenInfo.new(time, Enum.EasingStyle.Quart, Enum.EasingDirection.InOut), {
+    Position = pos
+  }):Play()
+end
+
 local function ApplyTheme(root, theme)
-	for _, instance in ipairs(root:GetDescendants()) do
-		if instance:IsA("TextLabel") or instance:IsA("TextButton") or instance:IsA("TextBox") then
-			instance.TextColor3 = theme.TextColor or instance.TextColor3;
-		end;
-		if instance:IsA("Frame") or instance:IsA("ImageLabel") or instance:IsA("TextButton") or instance:IsA("TextBox") then
-			if (instance.Name:lower()):match("main") or (instance.Name:lower()):match("background") then
-				instance.BackgroundColor3 = theme.BackgroundColor or instance.BackgroundColor3;
-			end;
-			if (instance.Name:lower()):match("accent") or (instance.Name:lower()):match("highlight") then
-				instance.BackgroundColor3 = theme.MainAccent or instance.BackgroundColor3;
-			end;
-		end;
-		if instance:IsA("UIStroke") then
-			instance.Color = theme.MainAccent or instance.Color;
-		end;
-		if instance:IsA("ImageLabel") and (instance.Name:lower()):match("shadow") then
-			instance.ImageColor3 = theme.ShadowColor or instance.ImageColor3;
-		end;
-	end;
-end;
+  for _, instance in ipairs(root:GetDescendants()) do
+    local lname = instance.Name:lower()
+
+    -- Background Coloring for frames, ImageLabels, TextBoxes, TextButtons
+    if instance:IsA("Frame") or instance:IsA("ImageLabel") or instance:IsA("TextBox") or instance:IsA("TextButton") then
+      if lname:match("main") or lname:match("background") then
+        instance.BackgroundColor3 = theme.BackgroundMain or instance.BackgroundColor3
+      elseif lname:match("secondary") or lname:match("panel") then
+        instance.BackgroundColor3 = theme.BackgroundSecondary or instance.BackgroundColor3
+      elseif lname:match("card") then
+        instance.BackgroundColor3 = theme.BackgroundCard or instance.BackgroundColor3
+      elseif lname:match("accent") or lname:match("highlight") then
+        instance.BackgroundColor3 = theme.MainAccent or instance.BackgroundColor3
+      elseif lname:match("notification") or lname:match("notif") then
+        instance.BackgroundColor3 = theme.NotificationBackground or instance.BackgroundColor3
+      end
+    end
+
+    -- Text coloring
+    if instance:IsA("TextLabel") or instance:IsA("TextButton") or instance:IsA("TextBox") then
+      if lname:match("secondary") or lname:match("placeholder") then
+        instance.TextColor3 = theme.TextSecondary or instance.TextColor3
+      elseif lname:match("notification") or lname:match("notif") then
+        instance.TextColor3 = theme.NotificationText or instance.TextColor3
+      else
+        instance.TextColor3 = theme.TextPrimary or instance.TextColor3
+      end
+
+      -- Optional: Add TextStroke for readability on primary texts
+      local stroke = instance:FindFirstChildOfClass("UITextStroke")
+      if not stroke then
+        stroke = Instance.new("UITextStroke")
+        stroke.Parent = instance
+      end
+      stroke.Color = theme.TextStroke or Color3.new(0, 0, 0)
+      stroke.Transparency = 0.75
+    end
+
+    -- Borders and dividers: frames and UIStroke
+    if instance:IsA("Frame") then
+      instance.BorderColor3 = theme.BorderColor or instance.BorderColor3
+    end
+    if instance:IsA("UIStroke") then
+      instance.Color = theme.BorderColor or instance.Color
+    end
+
+    -- Shadows on ImageLabels named with 'shadow'
+    if instance:IsA("ImageLabel") and lname:match("shadow") then
+      instance.ImageColor3 = theme.ShadowColor or instance.ImageColor3
+      instance.ImageTransparency = 0.5
+    end
+
+    -- Hover states (static color assignment)
+    if instance:IsA("TextButton") then
+      -- We can't bind events here, but you could do:
+      -- instance.MouseEnter:Connect(function() instance.BackgroundColor3 = theme.AccentHover end)
+      -- instance.MouseLeave:Connect(function() instance.BackgroundColor3 = theme.MainAccent end)
+      -- For now, set normal bg color to MainAccent if name matches accent
+      if lname:match("accent") or lname:match("highlight") then
+        instance.BackgroundColor3 = theme.MainAccent
+      elseif lname:match("hover") then
+        instance.BackgroundColor3 = theme.AccentHover
+      end
+    end
+  end
+end
 function lib:init(ti, dosplash, visiblekey, deleteprevious)
 	if syn then
 		cg = game:GetService("CoreGui");
