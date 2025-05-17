@@ -130,7 +130,6 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
 		splash.Parent = scrgui;
 		splash.AnchorPoint = Vector2.new(0.5, 0.5);
 		splash.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
-		splash.BackgroundTransparency = 0.6;
 		splash.Position = UDim2.new(0.5, 0, 2, 0);
 		splash.Size = UDim2.new(0, 340, 0, 340);
 		splash.Visible = true;
@@ -180,8 +179,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
 	main.Name = "main";
 	main.Parent = scrgui;
 	main.AnchorPoint = Vector2.new(0.5, 0.5);
-	main.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
-	main.BackgroundTransparency = 0.15;
+	main.BackgroundColor3 = Color3.fromRGB(18, 20, 23)
 	main.Position = UDim2.new(0.5, 0, 2, 0);
 	main.Size = UDim2.new(0, 721, 0, 584);
 	local uc = Instance.new("UICorner");
