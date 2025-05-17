@@ -1,5 +1,3 @@
-local TweenService = game:GetService("TweenService")
-
 local lib = {};
 local sections = {};
 local ContentAreas = {};
@@ -7,24 +5,19 @@ local Notifications = {};
 local visible = true;
 local IsToggleLocked = false;
 local Theme = {
-  BackgroundMain = Color3.fromRGB(18, 20, 23),          -- Main bg color
-  BackgroundSecondary = Color3.fromRGB(30, 34, 40),     -- Panels, cards, etc.
-  BackgroundCard = Color3.fromRGB(42, 47, 54),          -- Cards inside panels
-  TextPrimary = Color3.fromRGB(230, 230, 230),          -- Main text
-  TextSecondary = Color3.fromRGB(163, 168, 176),        -- Secondary text, placeholders
-  MainAccent = Color3.fromRGB(0, 153, 255),             -- Accent color (blue)
-  AccentHover = Color3.fromRGB(51, 170, 255),           -- Hover state accent
-  BorderColor = Color3.fromRGB(56, 61, 71),             -- Borders & dividers
-  ShadowColor = Color3.fromRGB(0, 0, 0),                 -- Shadows
-  NotificationBackground = Color3.fromRGB(0, 120, 215), -- Notifications bg
-  NotificationText = Color3.fromRGB(255, 255, 255),     -- Notifications text
-  TextStroke = Color3.fromRGB(0, 0, 0),                  -- Text stroke for contrast
-}
-local function tp(ins, pos, time, thing)
-	((game:GetService("TweenService")):Create(ins, TweenInfo.new(time, Enum.EasingStyle.Quart, Enum.EasingDirection.InOut), {
-		Position = pos
-	})):Play();
-end;
+  BackgroundMain = Color3.fromRGB(249, 250, 251),          -- Main bg: very light gray
+  BackgroundSecondary = Color3.fromRGB(255, 255, 255),     -- Panels, cards: pure white
+  BackgroundCard = Color3.fromRGB(243, 244, 246),          -- Cards: slightly gray
+  TextPrimary = Color3.fromRGB(17, 24, 39),                -- Dark gray text
+  TextSecondary = Color3.fromRGB(107, 114, 128),           -- Medium gray secondary text
+  MainAccent = Color3.fromRGB(59, 130, 246),               -- Bright blue accent
+  AccentHover = Color3.fromRGB(96, 165, 250),              -- Lighter blue on hover
+  BorderColor = Color3.fromRGB(209, 213, 219),             -- Light gray border
+  ShadowColor = Color3.fromRGB(0, 0, 0),                   -- Black shadow (use transparency for effect)
+  NotificationBackground = Color3.fromRGB(37, 99, 235),    -- Blue notification background
+  NotificationText = Color3.fromRGB(255, 255, 255),        -- White notification text
+  TextStroke = Color3.fromRGB(255, 255, 255),              -- White text stroke for contrast
+};
 local function tp(ins, pos, time)
   TweenService:Create(ins, TweenInfo.new(time, Enum.EasingStyle.Quart, Enum.EasingDirection.InOut), {
     Position = pos
@@ -66,8 +59,8 @@ local function ApplyTheme(root, theme)
         stroke = Instance.new("UITextStroke")
         stroke.Parent = instance
       end
-      stroke.Color = theme.TextStroke or Color3.new(0, 0, 0)
-      stroke.Transparency = 0.75
+      stroke.Color = theme.TextStroke or Color3.new(1, 1, 1)
+      stroke.Transparency = 0.6
     end
 
     -- Borders and dividers: frames and UIStroke
@@ -81,15 +74,11 @@ local function ApplyTheme(root, theme)
     -- Shadows on ImageLabels named with 'shadow'
     if instance:IsA("ImageLabel") and lname:match("shadow") then
       instance.ImageColor3 = theme.ShadowColor or instance.ImageColor3
-      instance.ImageTransparency = 0.5
+      instance.ImageTransparency = 0.85  -- very subtle shadow for light theme
     end
 
     -- Hover states (static color assignment)
     if instance:IsA("TextButton") then
-      -- We can't bind events here, but you could do:
-      -- instance.MouseEnter:Connect(function() instance.BackgroundColor3 = theme.AccentHover end)
-      -- instance.MouseLeave:Connect(function() instance.BackgroundColor3 = theme.MainAccent end)
-      -- For now, set normal bg color to MainAccent if name matches accent
       if lname:match("accent") or lname:match("highlight") then
         instance.BackgroundColor3 = theme.MainAccent
       elseif lname:match("hover") then
@@ -130,6 +119,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
 		splash.Parent = scrgui;
 		splash.AnchorPoint = Vector2.new(0.5, 0.5);
 		splash.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+		splash.BackgroundTransparency = 0.6;
 		splash.Position = UDim2.new(0.5, 0, 2, 0);
 		splash.Size = UDim2.new(0, 340, 0, 340);
 		splash.Visible = true;
@@ -153,8 +143,8 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
 		ug.Color = ColorSequence.new({
 			ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
 			ColorSequenceKeypoint.new(0.01, Color3.fromRGB(84, 149, 187)),
-			ColorSequenceKeypoint.new(0.47, Color3.fromRGB(255, 255, 255)),
-			ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
+			ColorSequenceKeypoint.new(0.47, Color3.fromRGB(12, 18, 13)),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(158, 158, 13))
 		});
 		ug.Rotation = 90;
 		ug.Parent = sicon;
@@ -179,7 +169,8 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
 	main.Name = "main";
 	main.Parent = scrgui;
 	main.AnchorPoint = Vector2.new(0.5, 0.5);
-	main.BackgroundColor3 = Color3.fromRGB(18, 20, 23)
+	main.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+	main.BackgroundTransparency = 0.15;
 	main.Position = UDim2.new(0.5, 0, 2, 0);
 	main.Size = UDim2.new(0, 721, 0, 584);
 	local uc = Instance.new("UICorner");
@@ -273,7 +264,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
 	sidebar.Name = "sidebar";
 	sidebar.Parent = main;
 	sidebar.Active = true;
-	sidebar.BackgroundColor3 = Color3.fromRGB(18, 20, 23)
+	sidebar.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
 	sidebar.BackgroundTransparency = 1;
 	sidebar.BorderSizePixel = 0;
 	sidebar.Position = UDim2.new(0.0249653254, 0, 0.181506842, 0);
@@ -337,7 +328,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
 	local minimize = Instance.new("TextButton");
 	minimize.Name = "minimize";
 	minimize.Parent = buttons;
-	minimize.BackgroundColor3 = Color3.fromRGB(235, 189, 91);
+	minimize.BackgroundColor3 = Color3.fromRGB(255, 189, 46);
 	minimize.Size = UDim2.new(0, 16, 0, 16);
 	minimize.AutoButtonColor = false;
 	minimize.Font = Enum.Font.SourceSans;
