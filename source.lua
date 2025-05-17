@@ -1,3 +1,6 @@
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
 local lib = {};
 local sections = {};
 local ContentAreas = {};
