@@ -5,12 +5,12 @@ local Notifications = {};
 local visible = true;
 local IsToggleLocked = false;
 local Theme = {
-	TextColor = Color3.fromRGB(95, 95, 95),
-	BackgroundColor = Color3.fromRGB(255, 255, 255),
-	MainAccent = Color3.fromRGB(21, 103, 251),
-	SecondaryAccent = Color3.fromRGB(216, 216, 216),
-	ShadowColor = Color3.fromRGB(0, 0, 0),
-	NotificationText = Color3.fromRGB(0, 0, 0)
+  TextColor = Color3.fromRGB(240, 240, 240),
+  BackgroundColor = Color3.fromRGB(30, 30, 30),
+  MainAccent = Color3.fromRGB(0, 122, 255),
+  SecondaryAccent = Color3.fromRGB(50, 50, 50),
+  ShadowColor = Color3.fromRGB(0, 0, 0),
+  NotificationText = Color3.fromRGB(255, 255, 255)
 };
 local function tp(ins, pos, time, thing)
 	((game:GetService("TweenService")):Create(ins, TweenInfo.new(time, Enum.EasingStyle.Quart, Enum.EasingDirection.InOut), {
@@ -87,15 +87,15 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
 		sicon.Position = UDim2.new(0.5, 0, 0.5, 0);
 		sicon.Size = UDim2.new(0, 191, 0, 190);
 		sicon.ZIndex = 40;
-		sicon.Image = "rbxassetid://12621719043";
+		sicon.Image = "rbxassetid://84330202924026";
 		sicon.ScaleType = Enum.ScaleType.Fit;
 		sicon.TileSize = UDim2.new(1, 0, 20, 0);
 		local ug = Instance.new("UIGradient");
 		ug.Color = ColorSequence.new({
-			ColorSequenceKeypoint.new(0, Color3.fromRGB(12, 18, 158)),
-			ColorSequenceKeypoint.new(0.01, Color3.fromRGB(12, 18, 13)),
-			ColorSequenceKeypoint.new(0.47, Color3.fromRGB(12, 18, 13)),
-			ColorSequenceKeypoint.new(1, Color3.fromRGB(158, 158, 13))
+			ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+			ColorSequenceKeypoint.new(0.01, Color3.fromRGB(84, 149, 187)),
+			ColorSequenceKeypoint.new(0.47, Color3.fromRGB(255, 255, 255)),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
 		});
 		ug.Rotation = 90;
 		ug.Parent = sicon;
