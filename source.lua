@@ -895,6 +895,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
 		end);
 		return sec;
 	end;
+	ApplyTheme(scrgui, Theme);
 	return window;
 end;
 return lib;
