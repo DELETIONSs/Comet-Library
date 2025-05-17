@@ -273,7 +273,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
 	sidebar.Name = "sidebar";
 	sidebar.Parent = main;
 	sidebar.Active = true;
-	sidebar.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+	sidebar.BackgroundColor3 = Color3.fromRGB(18, 20, 23)
 	sidebar.BackgroundTransparency = 1;
 	sidebar.BorderSizePixel = 0;
 	sidebar.Position = UDim2.new(0.0249653254, 0, 0.181506842, 0);
@@ -337,7 +337,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
 	local minimize = Instance.new("TextButton");
 	minimize.Name = "minimize";
 	minimize.Parent = buttons;
-	minimize.BackgroundColor3 = Color3.fromRGB(255, 189, 46);
+	minimize.BackgroundColor3 = Color3.fromRGB(235, 189, 91);
 	minimize.Size = UDim2.new(0, 16, 0, 16);
 	minimize.AutoButtonColor = false;
 	minimize.Font = Enum.Font.SourceSans;
